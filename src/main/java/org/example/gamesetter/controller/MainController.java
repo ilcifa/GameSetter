@@ -106,14 +106,72 @@ public class MainController {
         return "profile";
     }
     @GetMapping("/userdata")
-    public String userData(RedirectAttributes redirectAttributes, HttpSession session, Model model){
+    public String userData(RedirectAttributes redirectAttributes, HttpSession session, Model model, @RequestParam(required = false) String msgChange){
         Utente utente = (Utente) session.getAttribute("utente");
         if (utente == null) {
             redirectAttributes.addAttribute("msgLogin", "Devi eseguire il login!");
             return "redirect:/";
         }
+        model.addAttribute("utente", utente);
+        model.addAttribute("msgChange", msgChange);
         return "userdata";
     }
 
+    @PostMapping("/changedata")
+    public String changeData(RedirectAttributes redirectAttributes, @ModelAttribute("utente") Utente utente, Model model, HttpSession session){
+        Utente oldUtente = (Utente) session.getAttribute("utente");
+        if (oldUtente == null) {
+            redirectAttributes.addAttribute("msgLogin", "Devi eseguire il login!");
+            return "redirect:/";
+        }
+        if(oldUtente.getUsername().equals(utente.getUsername()) && oldUtente.getEmail().equals(utente.getEmail()) && oldUtente.getPassword().equals(utente.getPassword())){
+            redirectAttributes.addAttribute("msgChange", "Non hai modificato nessun parametro!");
+            return "redirect:/userdata";
+        }
+        String valido = controlli(oldUtente, utente);
+        if(!valido.equals("valido")){
+            redirectAttributes.addAttribute("msgChange", valido);
+            return "redirect:/userdata";
+        }
+        oldUtente.setUsername(utente.getUsername());
+        oldUtente.setEmail(utente.getEmail());
+        oldUtente.setPassword(utente.getPassword());
+        session.setAttribute("utente", oldUtente);
+        utenteService.addUtente(oldUtente);
+        return "redirect:/userdata";
+
+    }
+
+    public String controlli(Utente oldUtente, Utente utente){
+
+        if(utenteService.findByUsername(utente.getUsername()) != null && !oldUtente.getUsername().equals(utente.getUsername())){
+            return "Username già in uso!";
+        }
+        if(!oldUtente.getEmail().equals(utente.getEmail())){
+            if(utenteService.findByEmail(utente.getEmail()) != null){
+                return "Email già in uso!";
+            }
+            String email = utente.getEmail();
+            if(!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+                return "Email non valida!";
+            }
+        }
+        if(!oldUtente.getPassword().equals(utente.getPassword())){
+            String password = utente.getPassword();
+            if(password.length() < 8){
+                return "La password deve essere lunga 8 caratteri!";
+            }
+            if(!password.matches(".*[A-Z].*")){
+                return "La password deve contenere una lettera maiuscola!";
+            }
+            if(!password.matches(".*[0-9].*")){
+                return "La password deve contenere un numero!";
+            }
+            if(!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")){
+                return "La password deve contenere un carattere speciale!";
+            }
+        }
+        return "valido";
+    }
 
 }

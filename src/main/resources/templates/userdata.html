@@ -2,9 +2,224 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameSetter - Data</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .header {
+            background-color: #1a1a1a;
+            padding: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-left: 20px;
+            color: #00aaff;
+            font-size: 32px;
+        }
+
+        .profile-container {
+            position: absolute;
+            top: 22px;
+            right: 90px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-container img {
+            height: 40px;
+            width: 40px;
+            margin-right: 8px;
+        }
+
+        .profile-container div {
+            display: block;
+        }
+
+        .profile-container div > div {
+            margin-top: 2px;
+        }
+
+        #profile-image {
+            width: 64px;
+            height: 64px;
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #333333;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #profile-image:hover {
+            transform: scale(1.1);
+        }
+
+        #menu {
+            display: none;
+            position: absolute;
+            top: 80px;
+            right: 10px;
+            background-color: #333333;
+            min-width: 160px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            overflow: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        #menu a {
+            color: #ffffff;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #444444;
+            background-color: #333333;
+            transition: background-color 0.3s ease;
+        }
+
+        #menu a:hover {
+            background-color: #00aaff;
+            color: white;
+        }
+
+        .header a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
+        .form-container {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #00aaff;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 2px solid #333333;
+            background-color: #222222;
+            color: #ffffff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-container input:focus {
+            border-color: #00aaff;
+            outline: none;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00aaff;
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-container button:hover {
+            background-color: #0088cc;
+        }
+    </style>
 </head>
 <body>
+
+<div class="header">
+    <h1>GAMESETTER</h1>
+    <img src="/images/profilo.png" alt="Profile" id="profile-image">
+</div>
+
+<div id="menu">
+    <a href="/profile" class="menu-item">Giochi</a>
+    <a href="/logout" class="menu-item">Esci</a>
+</div>
+
+<div class="form-container">
+    <form action="/changedata" method="post" th:object="${utente}">
+        <h2>Dati Personali</h2>
+        <input type="text" th:field="*{username}" placeholder="Username" required><br>
+        <input type="text" th:field="*{email}" placeholder="Email" required><br>
+        <input type="text" th:field="*{password}" placeholder="Password" required><br>
+        <button type="submit">Modifica i dati</button>
+        <p style="color: red" th:text="${msgChange}"></p>
+    </form>
+</div>
+
+<script>
+    const profileImage = document.getElementById("profile-image");
+    const menu = document.getElementById("menu");
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    profileImage.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        if (menu.style.display === "block") {
+            menu.style.display = "none";
+            menu.style.opacity = 0;
+        } else {
+            menu.style.display = "block";
+            setTimeout(function() {
+                menu.style.opacity = 1;
+            }, 10);
+        }
+    });
+
+    window.addEventListener("click", function(event) {
+        if (!profileImage.contains(event.target) && !menu.contains(event.target)) {
+            menu.style.display = "none";
+            menu.style.opacity = 0;
+        }
+    });
+
+    profileImage.addEventListener("mouseover", function() {
+        profileImage.style.transform = "scale(1.1)";
+    });
+
+    profileImage.addEventListener("mouseout", function() {
+        profileImage.style.transform = "scale(1)";
+    });
+
+    menuItems.forEach(function(item) {
+        item.addEventListener("mouseover", function() {
+            item.style.backgroundColor = "#00aaff";
+            item.style.color = "white";
+        });
+
+        item.addEventListener("mouseout", function() {
+            item.style.backgroundColor = "";
+            item.style.color = "";
+        });
+    });
+</script>
 
 </body>
 </html>
