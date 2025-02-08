@@ -125,7 +125,7 @@ public class MainController {
             return "redirect:/";
         }
         if(oldUtente.getUsername().equals(utente.getUsername()) && oldUtente.getEmail().equals(utente.getEmail()) && oldUtente.getPassword().equals(utente.getPassword())){
-            redirectAttributes.addAttribute("msgChange", "Non hai modificato nessun parametro!");
+            redirectAttributes.addAttribute("msgChange", "Nessun parametro modificato!");
             return "redirect:/userdata";
         }
         String valido = controlli(oldUtente, utente);

@@ -58,12 +58,6 @@
             background-color: #0099cc;
         }
 
-        p {
-            color: red;
-            font-size: 1rem;
-            margin-top: 5px;
-        }
-
         a {
             color: #ffffff;
             text-decoration: none;
@@ -74,6 +68,33 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            width: 250px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: #ffcc00; /* Nuovo colore della barra di progresso */
+            width: 0%;
+            margin-bottom: 10px; /* Posiziona la barra sopra la scritta */
+            border-radius: 0; /* Nessun bordo arrotondato */
+        }
+
     </style>
 </head>
 <body>
@@ -84,9 +105,51 @@
         <input type="text" name="email" placeholder="Email" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <input type="submit" value="Registrati">
-        <p style="color: red" th:text="${msgRegister}"></p>
         <a href="/">Hai già un account? Accedi ora</a>
     </form>
 </div>
+
+<div class="popup" id="popupRegister">
+    <div class="progress-bar" id="progressBarRegister"></div>
+    <div id="popupTextRegister"></div>
+</div>
+
+<script>
+    window.onload = function() {
+        var messageRegister = "[[${msgRegister}]]";
+        if (messageRegister && messageRegister !== '') {
+            var popupRegister = document.getElementById("popupRegister");
+            var progressBarRegister = document.getElementById("progressBarRegister");
+            var popupTextRegister = document.getElementById("popupTextRegister");
+
+            popupTextRegister.textContent = messageRegister;
+
+            popupRegister.style.display = "block";
+            setTimeout(function() {
+                popupRegister.style.opacity = 1;
+                popupRegister.style.transform = "translateX(0)";
+            }, 100);
+
+            var widthRegister = 0;
+            var intervalRegister = setInterval(function() {
+                if (widthRegister >= 100) {
+                    clearInterval(intervalRegister);
+                } else {
+                    widthRegister++;
+                    progressBarRegister.style.width = widthRegister + "%";
+                }
+            }, 30);
+
+            setTimeout(function() {
+                popupRegister.style.opacity = 0;
+                popupRegister.style.transform = "translateX(100%)";
+            }, 3000);
+
+            setTimeout(function() {
+                progressBarRegister.style.width = "0%";
+            }, 3500);
+        }
+    };
+</script>
 </body>
 </html>

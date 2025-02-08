@@ -149,6 +149,33 @@
         .form-container button:hover {
             background-color: #0088cc;
         }
+
+        .popup {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            width: 250px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: #ffcc00; /* Nuovo colore della barra di progresso */
+            width: 0%;
+            margin-bottom: 10px; /* Posiziona la barra sopra la scritta */
+            border-radius: 0; /* Nessun bordo arrotondato */
+        }
+
     </style>
 </head>
 <body>
@@ -170,8 +197,12 @@
         <input type="text" th:field="*{email}" placeholder="Email" required><br>
         <input type="text" th:field="*{password}" placeholder="Password" required><br>
         <button type="submit">Modifica i dati</button>
-        <p style="color: red" th:text="${msgChange}"></p>
     </form>
+</div>
+
+<div class="popup" id="popupChange">
+    <div class="progress-bar" id="progressBarChange"></div>
+    <div id="popupTextChange"></div>
 </div>
 
 <script>
@@ -219,6 +250,42 @@
             item.style.color = "";
         });
     });
+
+    window.onload = function() {
+        var messageChange = "[[${msgChange}]]";
+        if (messageChange && messageChange !== '') {
+            var popupChange = document.getElementById("popupChange");
+            var progressBarChange = document.getElementById("progressBarChange");
+            var popupTextChange = document.getElementById("popupTextChange");
+
+            popupTextChange.textContent = messageChange;
+
+            popupChange.style.display = "block";
+            setTimeout(function() {
+                popupChange.style.opacity = 1;
+                popupChange.style.transform = "translateX(0)";
+            }, 100);
+
+            var widthChange = 0;
+            var intervalChange = setInterval(function() {
+                if (widthChange >= 100) {
+                    clearInterval(intervalChange);
+                } else {
+                    widthChange++;
+                    progressBarChange.style.width = widthChange + "%";
+                }
+            }, 30);
+
+            setTimeout(function() {
+                popupChange.style.opacity = 0;
+                popupChange.style.transform = "translateX(100%)";
+            }, 3000);
+
+            setTimeout(function() {
+                progressBarChange.style.width = "0%";
+            }, 3500);
+        }
+    };
 </script>
 
 </body>

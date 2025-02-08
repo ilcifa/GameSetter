@@ -17,6 +17,7 @@
             align-items: center;
             height: 100vh;
             color: #ffffff;
+            overflow-x: hidden;
         }
 
         form {
@@ -59,12 +60,6 @@
             background-color: #0099cc;
         }
 
-        p {
-            color: red;
-            font-size: 1rem;
-            margin-top: 5px;
-        }
-
         a {
             color: #ffffff;
             text-decoration: none;
@@ -75,6 +70,33 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            width: 250px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: #ffcc00; /* Nuovo colore della barra di progresso */
+            width: 0%;
+            margin-bottom: 10px; /* Posiziona la barra sopra la scritta */
+            border-radius: 0; /* Nessun bordo arrotondato */
+        }
+
     </style>
 </head>
 <body>
@@ -84,9 +106,50 @@
         <input type="text" name="username" placeholder="Username" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <input type="submit" value="Login">
-        <p style="color: red" th:text="${msgLogin}"></p>
         <a href="/register">Non hai un account? Registrati ora</a>
     </form>
 </div>
+<div class="popup" id="popupMessage">
+    <div class="progress-bar" id="progressBar"></div>
+    <div id="popupText"></div>
+</div>
+
+<script>
+    window.onload = function() {
+        var message = "[[${msgLogin}]]";
+        if (message && message !== '') {
+            var popup = document.getElementById("popupMessage");
+            var progressBar = document.getElementById("progressBar");
+            var popupText = document.getElementById("popupText");
+
+            popupText.textContent = message;
+
+            popup.style.display = "block";
+            setTimeout(function() {
+                popup.style.opacity = 1;
+                popup.style.transform = "translateX(0)";
+            }, 100);
+
+            var width = 0;
+            var interval = setInterval(function() {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width++;
+                    progressBar.style.width = width + "%";
+                }
+            }, 30);
+
+            setTimeout(function() {
+                popup.style.opacity = 0;
+                popup.style.transform = "translateX(100%)";
+            }, 3000);
+
+            setTimeout(function() {
+                progressBar.style.width = "0%";
+            }, 3500);
+        }
+    };
+</script>
 </body>
 </html>
